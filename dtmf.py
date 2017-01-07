@@ -1,45 +1,44 @@
-import sys
 import wave
-import math
+from math import sin, pi
 
-#TODO LIST :
-#-implémenter lettres (réécrire la vérif de l'input, l'objet dtmf et son utilisation)
-#-rendre le son plus propre :
-	#- fade in/out (moduler l'ampli durant la génération)
-	#- des vraies pauses (j'ai pas trouvé comment :/)
-#refactoriser le code
-#-gui?
+#variable qui associe un chiffre/une lettre à deux fréquences
+dtmf = {
+	'1': (1209,697),
+	'2': (1336,697),
+	'3': (1477,697),
+	'A': (1633,697),
+	'4': (1209,770),
+	'5': (1336,770),
+	'6': (1477,770),
+	'B': (1633,770),
+	'7': (1209,852),
+	'8': (1336,852),
+	'9': (1477,852),
+	'C': (1633,852),
+	'*': (1209,941),
+	'0': (1336,941),
+	'#': (1477,941),
+	'D': (1633,941),
+}
 
-#0 1 2 3 4 5 6 7 8 9
-#letters not implemnted
-dtmf = [(1336,941),(1209,697),(1336,697),(1477,697),(1209,770),(1336,770),(1477,770),(1209,852),(1336,852),(1477,852)]
-final_snd = []
+def genWave(j, freq0, freq1, freq2, amp):
+	#ux = 2 * pi * (freqx/freq0)
+	u1 = 2 * pi * (freq1/freq0)
+	u2 = 2 * pi * (freq2/freq0)
+	#résultat = amplitude + 63*sin(u1*j) + 63*sin(u2*j) 
+	return int(amp + 63*sin(u1*j) + 63*sin(u2*j))
 
-#le nombre demandé est une string car d'après le standard DTMF il peut contenir les lettres de A à D
-nb = str(input("Dial: "))
-if nb != "502007" and len(nb) > 10:
-		print("Too long!")
-		sys.exit(1)
-
-duree = 0.1 #nombres de secondes pour un chiffre du numéro
-#note : la durée de la pause entre 2 tonalités = duree/2
-f = 8000 #fréquence de sample
-amp = 127.5 #255/2
-#duree*len(nb)*f = nombre total de samples pour les tonalités
-#(duree/2*f)*len(nb) = nombre total de samples pour les pauses
-spl = int(duree*len(nb)*f+(duree/2*f)*len(nb)) #duree totale en samples
-print("Samples: "+str(spl))
-print("Generating...")
-for i in nb:
-		for j in range(0,int(duree*f)):
-				res = int(amp+63*math.sin((2*math.pi*(dtmf[int(i)][0])/f)*j)+63*math.sin((2*math.pi*(dtmf[int(i)][1])/f)*j))
-				final_snd.append(wave.struct.pack("B",res))
-		for k in range(0,int(duree/2*f)):
-		 	final_snd.append(wave.struct.pack("B",0))
-
-#NOTE : pourquoi utiliser une liste pour produire le fichier final?
-#parce qu'on appelle writeframes une seule fois, ce qui réduit le temps de génération du fichier
-with wave.open(nb+".wav", "w") as snd:
-	#nombre de canaux, taille d'encodage, fréquence, nombre de samples
-	snd.setparams((1,1,f,spl,"NONE","not compressed"))
-	snd.writeframes(b''.join(final_snd))
+def convertDTMF(number, freq, duree, amp):
+	finalSND = [] #les samples seront placés dedans
+	splTon = duree*len(number)*freq #nombre total de samples pour les tonalités
+	splPoz = (duree/2*freq)*len(number) #nombre total de samples pour les pauses
+	spl = int(splTon+splPoz) #duree totale en samples
+	for i in number: #pour chaque chiffre
+		for j in range(0,int(duree*freq)): #pour chaque sample
+				freq1 = dtmf[i][0] #on prend la première valeur associée au chiffre
+				freq2 = dtmf[i][1] #et la seconde
+				res = genWave(j, freq, freq1, freq2, amp)
+				finalSND.append(wave.struct.pack("B",res))
+		for k in range(0,int(duree/2*freq)):
+		 	finalSND.append(wave.struct.pack("B",0))
+	return finalSND, spl
