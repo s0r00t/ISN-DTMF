@@ -1,12 +1,5 @@
-import wave
+from wave import open
 from dtmf import convertDTMF
-
-#TODO LIST :
-#-rendre le son plus propre :
-	#- fade in/out (moduler l'ampli durant la génération)
-	#- des vraies pauses (j'ai pas trouvé comment :/)
-#refactoriser genWave?
-#-gui?
 
 #le nombre demandé est une string car d'après le standard DTMF il peut contenir les lettres de A à D
 nb = str(input("Dial: "))
@@ -20,7 +13,7 @@ print("Generating...")
 finalList, spl = convertDTMF(nb, f, duree, amp)
 #NOTE : pourquoi utiliser une liste pour produire le fichier final?
 #parce qu'on appelle writeframes une seule fois, ce qui réduit le temps de génération du fichier
-with wave.open(nb+".wav", "w") as snd:
-	#nombre de canaux, taille d'encodage, fréquence, nombre de samples
+with open(nb+".wav", "w") as snd:
+	#nombre de canaux, taille d'encodage, fréquence, nombre de samples (les deux derniers paramètres désactivent la compression)
 	snd.setparams((1,1,f,spl,"NONE","not compressed"))
 	snd.writeframes(b''.join(finalList))
