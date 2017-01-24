@@ -47,16 +47,14 @@ def convertDTMF(number, freq, duree, amp):
 	splPoz = (duree/2*freq)*len(number) #nombre total de samples pour les pauses
 	spl = int(splTon+splPoz) #duree totale en samples
 	for i in number: #pour chaque chiffre
-		if not i in dtmf: #si le caractères n'est pas défini dans la liste DTMF
-			if i in blank: 
-				continue #on ignore les + et les -
-			else:
-				raise DTMFError("Unknown character \""+i+"\"")
-		for j in range(0,int(duree*freq)): #pour chaque sample
-				freq1 = dtmf[i][0] #on prend la première valeur associée au chiffre
-				freq2 = dtmf[i][1] #et la seconde
-				res = genWave(j, freq, freq1, freq2, amp) #on génère le signal avec la fonction définie ci-dessus
-				finalSND.append(struct.pack("B",res)) #et on l'ajoute à la liste qui sera retournée
-		for k in range(0,int(duree/2*freq)): #pour chaque sample de la pause
-		 	finalSND.append(struct.pack("B",0)) #on ajoute des 0
+		if i in dtmf:
+			for j in range(0,int(duree*freq)): #pour chaque sample
+					freq1 = dtmf[i][0] #on prend la première valeur associée au chiffre
+					freq2 = dtmf[i][1] #et la seconde
+					res = genWave(j, freq, freq1, freq2, amp) #on génère le signal avec la fonction définie ci-dessus
+					finalSND.append(struct.pack("B",res)) #et on l'ajoute à la liste qui sera retournée
+			for k in range(0,int(duree/2*freq)): #pour chaque sample de la pause
+			 	finalSND.append(struct.pack("B",0)) #on ajoute des 0
+		elif not i in blank:
+			raise DTMFError("Unknown character \""+i+"\"")
 	return finalSND, spl

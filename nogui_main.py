@@ -1,3 +1,5 @@
+#ceci est l'ancienne version du numéroteur, sans interface graphique
+#elle marche "sans protections" (elle peut créer des fichiers vides par exemple)
 from wave import open
 from dtmf import convertDTMF
 
