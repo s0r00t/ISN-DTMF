@@ -4,7 +4,7 @@
 from tkinter import *
 #NOTE: même avec ttk tkinter reste dégueulasse sous linux. à étudier
 from tkinter.ttk import *
-from dtmf import *
+from dtmf import convertDTMF
 from wave import open
 
 dialWindow = Tk()
@@ -35,7 +35,7 @@ def dialNumber():
 	dans dtmf.py.
 	"""
 	nb = number.get()
-	if nb == '': pass #on évite de créer un fichier vide si il n'y a pas de numéro
+	if nb == '': return #on évite de créer un fichier vide si il n'y a pas de numéro
 	finalList, spl = convertDTMF(nb, f, duree, amp)
 	#NOTE: pourquoi utiliser une liste afin de stocker les signaux?
 	#parce qu'ainsi writeframes n'est appelé qu'une seule fois, et cela
