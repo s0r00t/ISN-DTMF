@@ -1,8 +1,5 @@
-#TODO:
-#  -peaufiner la GUI
-#  -implémenter menu secret?
 from tkinter import *
-#NOTE: même avec ttk tkinter reste dégueulasse sous linux. à étudier
+#ttk = themed tkinter (excepté sous linux visiblement)
 from tkinter.ttk import *
 from dtmf import convertDTMF
 from wave import open
@@ -23,7 +20,7 @@ Style(dialWindow).configure("Hang.TButton", background="white", font="serif 30",
 
 def appendNumber(digit):
 	"""
-	"Callback" appelée dès qu'un bouton de composition est pressé.
+	Fonction appelée dès qu'un bouton de composition est pressé.
 	"""
 	global number
 	if len(number.get()) < 10:
