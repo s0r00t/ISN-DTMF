@@ -1,3 +1,4 @@
+#!/bin/python
 from tkinter import *
 #ttk = themed tkinter (excepté sous linux visiblement)
 from tkinter.ttk import *
