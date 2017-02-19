@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python3
 #ceci est l'ancienne version du numéroteur, sans interface graphique
 #elle marche "sans protections" (elle peut créer des fichiers vides par exemple)
 from wave import open
